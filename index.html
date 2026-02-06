@@ -7,8 +7,6 @@
   <style>
     :root{
       --bg:#0b1220;
-      --card:#111a2e;
-      --card2:#0f1730;
       --text:#e7ecff;
       --muted:#b8c2ff;
       --accent:#6aa7ff;
@@ -98,14 +96,8 @@
     input[type="text"]::placeholder{ color: rgba(231,236,255,.45); }
     input:focus{ border-color: rgba(106,167,255,.55); box-shadow: 0 0 0 3px rgba(106,167,255,.18); }
 
-    .row{
-      display:grid;
-      grid-template-columns:1fr;
-      gap:12px;
-    }
-    @media (min-width: 420px){
-      .row.two{ grid-template-columns:1fr 1fr; }
-    }
+    .row{ display:grid; grid-template-columns:1fr; gap:12px; }
+    @media (min-width: 420px){ .row.two{ grid-template-columns:1fr 1fr; } }
 
     .checks{
       margin-top:12px;
@@ -117,12 +109,7 @@
       border:1px dashed rgba(255,255,255,.16);
       background: rgba(0,0,0,.12);
     }
-    .check{
-      display:flex;
-      gap:10px;
-      align-items:flex-start;
-      user-select:none;
-    }
+    .check{ display:flex; gap:10px; align-items:flex-start; user-select:none; }
     .check input{ margin-top:2px; transform: scale(1.12); }
     .check span{ font-size:13px; color:var(--text); }
     .check small{ display:block; color:var(--muted); font-size:12px; margin-top:2px; }
@@ -163,11 +150,7 @@
       line-height:1.4;
     }
 
-    .list{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
+    .list{ display:flex; flex-direction:column; gap:10px; }
     .item{
       border:1px solid var(--line);
       background: rgba(0,0,0,.12);
@@ -180,18 +163,8 @@
     @media (min-width: 560px){
       .item{ grid-template-columns: 1fr auto; align-items:center; }
     }
-    .meta{
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-      min-width:0;
-    }
-    .meta .top{
-      display:flex;
-      gap:10px;
-      align-items:baseline;
-      flex-wrap:wrap;
-    }
+    .meta{ display:flex; flex-direction:column; gap:4px; min-width:0; }
+    .meta .top{ display:flex; gap:10px; align-items:baseline; flex-wrap:wrap; }
     .name{
       font-weight:800;
       letter-spacing:.2px;
@@ -200,16 +173,8 @@
       white-space:nowrap;
       max-width: 100%;
     }
-    .date{
-      color:var(--muted);
-      font-size:12px;
-      white-space:nowrap;
-    }
-    .status{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-    }
+    .date{ color:var(--muted); font-size:12px; white-space:nowrap; }
+    .status{ display:flex; gap:8px; flex-wrap:wrap; }
     .pill{
       font-size:12px;
       padding:6px 10px;
@@ -222,21 +187,9 @@
     .pill.ok{ border-color: rgba(88,211,140,.45); background: rgba(88,211,140,.10); }
     .pill.warn{ border-color: rgba(255,214,106,.45); background: rgba(255,214,106,.10); }
     .pill.bad{ border-color: rgba(255,106,106,.45); background: rgba(255,106,106,.10); }
-    .actions{
-      display:flex;
-      gap:8px;
-      justify-content:flex-end;
-      flex-wrap:wrap;
-    }
-    .mini{
-      padding:10px 12px;
-      font-size:13px;
-    }
-    .empty{
-      color:var(--muted);
-      font-size:13px;
-      padding:10px 2px;
-    }
+    .actions{ display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap; }
+    .mini{ padding:10px 12px; font-size:13px; }
+    .empty{ color:var(--muted); font-size:13px; padding:10px 2px; }
     footer{
       max-width:1100px;
       margin:0 auto;
@@ -257,7 +210,7 @@
   <header>
     <h1>Krankmeldungen Schule</h1>
     <p class="sub">
-      Einträge lokal verwalten (Hinzufügen/Bearbeiten/Löschen) und per Button einen E-Mail-Entwurf öffnen.
+      Einträge lokal verwalten (Hinzufügen/Bearbeiten/Löschen) und per Button einen E-Mail-Entwurf mit allen Einträgen öffnen.
     </p>
   </header>
 
@@ -322,8 +275,7 @@
           </div>
 
           <div class="hint">
-            Nutzung: Erst Eintrag(e) mit „Bestätigen“ speichern. Danach:
-            „Bearbeiten“ beim passenden Eintrag klicken und „E-Mail Entwurf“ drücken.
+            „E-Mail Entwurf“ erstellt eine Mail mit <b>allen</b> Einträgen der Liste (neueste zuerst).
           </div>
         </form>
       </div>
@@ -403,23 +355,11 @@
         return s;
       }
 
-      function buildEmail(entry){
-        const subject = "Krankmeldung";
-        const statuses = entry.statuses.length ? entry.statuses.join(", ") : "Keine Angabe";
-        const body =
-`${entry.name}, ${entry.vorname} hat am ${formatDE(entry.datum)}:
-${statuses}
-
-${SIGNATURE}`;
-        return { subject, body };
-      }
-
       function encodeRFC3986(str){
         return encodeURIComponent(str)
           .replace(/[!'()*]/g, c => '%' + c.charCodeAt(0).toString(16).toUpperCase());
       }
 
-      // Maximal kompatibel: mailto. Wenn Gmail als Standard-Mail-App gesetzt ist, öffnet es i.d.R. Gmail.
       function openEmailDraft(to, subject, body){
         const mailto = `mailto:${encodeRFC3986(to)}?subject=${encodeRFC3986(subject)}&body=${encodeRFC3986(body)}`;
         window.location.href = mailto;
@@ -577,22 +517,23 @@ ${SIGNATURE}`;
         }
       }
 
-      function getEntryForEmail(){
-        // 1) Wenn Bearbeiten-Modus aktiv → genau diesen Eintrag nehmen
-        if(editingId){
-          const e = entries.find(x => x.id === editingId);
-          if(e) return e;
+      // NEU: Mailtext aus ALLEN Einträgen bauen
+      function buildEmailForAll(allEntries){
+        const subject = "Krankmeldung";
+        const lines = [];
+
+        for(let i = 0; i < allEntries.length; i++){
+          const e = allEntries[i];
+          const statuses = (e.statuses && e.statuses.length) ? e.statuses.join(", ") : "Keine Angabe";
+          lines.push(`${i+1}. ${e.name}, ${e.vorname} hat am ${formatDE(e.datum)}: ${statuses}`);
         }
 
-        // 2) Wenn Formular gültig ausgefüllt → aus Formular erzeugen (ohne zu speichern)
-        const formData = readForm();
-        const err = validate(formData);
-        if(!err) return formData;
+        const body =
+`${lines.join("\n")}
 
-        // 3) Sonst: letzten Eintrag nehmen
-        if(entries.length) return entries[0];
+${SIGNATURE}`;
 
-        return null;
+        return { subject, body };
       }
 
       /** Events */
@@ -609,14 +550,13 @@ ${SIGNATURE}`;
         clearForm();
       });
 
-      // NEU: E-Mail Entwurf Button
+      // E-Mail Entwurf: ALLE Einträge
       emailBtn.addEventListener("click", () => {
-        const entry = getEntryForEmail();
-        if(!entry){
-          alert("Kein Eintrag vorhanden. Bitte zuerst einen Eintrag speichern oder das Formular vollständig ausfüllen.");
+        if(!entries.length){
+          alert("Keine Einträge vorhanden. Bitte zuerst Einträge speichern (Bestätigen).");
           return;
         }
-        const { subject, body } = buildEmail(entry);
+        const { subject, body } = buildEmailForAll(entries);
         openEmailDraft(MAIL_TO, subject, body);
       });
 
