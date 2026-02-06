@@ -76,4 +76,657 @@
       font-size:12px;
       color:var(--muted);
       padding:6px 10px;
-      border:1px solid
+      border:1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(0,0,0,.15);
+      white-space:nowrap;
+    }
+    .card .bd{ padding:16px; }
+
+    label{ display:block; font-size:12px; color:var(--muted); margin:12px 0 6px; }
+    input[type="text"], input[type="date"]{
+      width:100%;
+      padding:12px 12px;
+      border-radius: 12px;
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      outline:none;
+    }
+    input[type="text"]::placeholder{ color: rgba(231,236,255,.45); }
+    input:focus{ border-color: rgba(106,167,255,.55); box-shadow: 0 0 0 3px rgba(106,167,255,.18); }
+    input:disabled{ opacity:.55; cursor:not-allowed; }
+
+    .row{ display:grid; grid-template-columns:1fr; gap:12px; }
+    @media (min-width: 420px){ .row.two{ grid-template-columns:1fr 1fr; } }
+
+    .checks{
+      margin-top:12px;
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+      padding:12px;
+      border-radius: 14px;
+      border:1px dashed rgba(255,255,255,.16);
+      background: rgba(0,0,0,.12);
+    }
+
+    .check{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      user-select:none;
+    }
+    .check input{
+      margin-top:2px;
+      transform: scale(1.12);
+      flex: 0 0 auto;
+    }
+    .check .cbtext{
+      display:block;
+      cursor:pointer;
+    }
+    .check .cbtext span{
+      font-size:13px;
+      color:var(--text);
+      display:block;
+      line-height:1.25;
+    }
+    .check .cbtext small{
+      display:block;
+      color:var(--muted);
+      font-size:12px;
+      margin-top:2px;
+      line-height:1.25;
+    }
+
+    .check-inline{ align-items:flex-start; }
+    .check-inline-content{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      width:100%;
+    }
+    .inline-field{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .inline-label{
+      margin:0;
+      font-size:12px;
+      color:var(--muted);
+      white-space:nowrap;
+    }
+    .inline-date{
+      width: 175px;
+      padding:10px 10px;
+      border-radius: 12px;
+    }
+    @media (max-width: 420px){
+      .inline-date{ width:100%; }
+      .inline-label{ white-space:normal; }
+    }
+
+    .btns{
+      margin-top:16px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .btns-secondary{
+      margin-top:10px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    button{
+      cursor:pointer;
+      border-radius: 14px;
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      padding:12px 14px;
+      font-weight:650;
+      letter-spacing:.2px;
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      transition: transform .06s ease, border-color .12s ease, background .12s ease;
+    }
+    button:active{ transform: translateY(1px); }
+    .primary{
+      border-color: rgba(106,167,255,.55);
+      background: rgba(106,167,255,.14);
+    }
+    .danger{
+      border-color: rgba(255,106,106,.55);
+      background: rgba(255,106,106,.10);
+    }
+
+    .hint{
+      margin-top:10px;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.4;
+    }
+
+    .list{ display:flex; flex-direction:column; gap:10px; }
+    .item{
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.12);
+      border-radius: 14px;
+      padding:12px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+    }
+    @media (min-width: 560px){
+      .item{ grid-template-columns: 1fr auto; align-items:center; }
+    }
+    .meta{ display:flex; flex-direction:column; gap:4px; min-width:0; }
+    .meta .top{ display:flex; gap:10px; align-items:baseline; flex-wrap:wrap; }
+    .name{
+      font-weight:800;
+      letter-spacing:.2px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      max-width: 100%;
+    }
+    .date{ color:var(--muted); font-size:12px; white-space:nowrap; }
+    .status{ display:flex; gap:8px; flex-wrap:wrap; }
+    .pill{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      white-space:nowrap;
+    }
+    .pill.ok{ border-color: rgba(88,211,140,.45); background: rgba(88,211,140,.10); }
+    .pill.warn{ border-color: rgba(255,214,106,.45); background: rgba(255,214,106,.10); }
+    .pill.bad{ border-color: rgba(255,106,106,.45); background: rgba(255,106,106,.10); }
+    .actions{ display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap; }
+    .mini{ padding:10px 12px; font-size:13px; }
+    .empty{ color:var(--muted); font-size:13px; padding:10px 2px; }
+    footer{
+      max-width:1100px;
+      margin:0 auto;
+      padding:14px 16px 28px;
+      color: rgba(184,194,255,.72);
+      font-size:12px;
+      line-height:1.45;
+    }
+    code{
+      background: rgba(0,0,0,.25);
+      padding:2px 6px;
+      border-radius:8px;
+      border:1px solid rgba(255,255,255,.12);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Krankmeldungen Schule</h1>
+    <p class="sub">
+      Einträge lokal verwalten (Hinzufügen/Bearbeiten/Löschen) und per Button einen E-Mail-Entwurf mit allen Einträgen öffnen.
+    </p>
+  </header>
+
+  <main class="wrap">
+    <section class="card" aria-label="Formular">
+      <div class="hd">
+        <div class="title">Formular</div>
+        <div class="badge" id="modeBadge">Neu</div>
+      </div>
+      <div class="bd">
+        <form id="kmForm" autocomplete="off">
+          <div class="row two">
+            <div>
+              <label for="name">Name</label>
+              <input id="name" type="text" placeholder="z. B. Müller" required />
+            </div>
+            <div>
+              <label for="vorname">Vorname</label>
+              <input id="vorname" type="text" placeholder="z. B. Max" required />
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label for="datum">Datum</label>
+              <input id="datum" type="date" required />
+            </div>
+          </div>
+
+          <div class="checks" role="group" aria-label="Checkboxen">
+            <label style="margin:0 0 6px 0; font-size:12px; color:var(--muted);">Optionen</label>
+
+            <div class="check">
+              <input id="heute" type="checkbox" />
+              <label id="heuteLabel" class="cbtext" for="heute">
+                <span>Heute</span>
+                <small>Setzt automatisch das heutige Datum ins Datumsfeld.</small>
+              </label>
+            </div>
+
+            <div class="check">
+              <input id="dienstabbruch" type="checkbox" />
+              <label class="cbtext" for="dienstabbruch">
+                <span>Dienstabbruch</span>
+              </label>
+            </div>
+
+            <div class="check check-inline">
+              <input id="krankgemeldet" type="checkbox" />
+              <div class="check-inline-content">
+                <label class="cbtext" for="krankgemeldet" style="margin:0;">
+                  <span>Krankgemeldet</span>
+                </label>
+                <div class="inline-field">
+                  <label class="inline-label" for="krankBis">Bis (Datum krankgemeldet)</label>
+                  <input id="krankBis" class="inline-date" type="date" />
+                </div>
+              </div>
+            </div>
+
+            <div class="check">
+              <input id="wieder" type="checkbox" />
+              <label class="cbtext" for="wieder">
+                <span>Wieder zur Arbeit</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="btns">
+            <button type="button" class="danger" id="resetBtn">Zurücksetzen</button>
+            <button type="submit" class="primary" id="confirmBtn">Bestätigen</button>
+            <button type="button" id="emailBtn">E-Mail Entwurf</button>
+          </div>
+
+          <div class="btns-secondary">
+            <button type="button" class="danger" id="clearCacheBtn">Cache löschen</button>
+          </div>
+
+          <div class="hint">
+            „E-Mail Entwurf“ erstellt eine Mail mit <b>allen</b> Einträgen der Liste (neueste zuerst).
+            Das „Bis“-Datum wird nur ausgegeben, wenn es gefüllt ist.
+            „Cache löschen“ entfernt lokale Daten dieser Seite (Einträge) und lädt neu.
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="card" aria-label="Liste">
+      <div class="hd">
+        <div class="title">Liste</div>
+        <div class="badge"><span id="count">0</span> Einträge</div>
+      </div>
+      <div class="bd">
+        <div class="list" id="list"></div>
+        <div class="empty" id="empty">Noch keine Einträge. Formular ausfüllen und „Bestätigen“ drücken.</div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Speichert Einträge lokal im Browser (<code>localStorage</code>). Keine Server-Übertragung.
+  </footer>
+
+  <script>
+    (function(){
+      "use strict";
+
+      const STORAGE_KEY = "km_schule_entries_v1";
+
+      const $ = (id) => document.getElementById(id);
+
+      const form = $("kmForm");
+      const nameEl = $("name");
+      const vornameEl = $("vorname");
+      const datumEl = $("datum");
+
+      const heuteEl = $("heute");
+      const heuteLabelEl = $("heuteLabel");
+
+      const dienstabbruchEl = $("dienstabbruch");
+      const krankgemeldetEl = $("krankgemeldet");
+      const krankBisEl = $("krankBis");
+      const wiederEl = $("wieder");
+
+      const listEl = $("list");
+      const emptyEl = $("empty");
+      const countEl = $("count");
+      const modeBadge = $("modeBadge");
+
+      const resetBtn = $("resetBtn");
+      const emailBtn = $("emailBtn");
+      const clearCacheBtn = $("clearCacheBtn");
+
+      const MAIL_TO = "davsan86@gmail.com";
+      const SIGNATURE = "Mit freundlichen Grüßen,\nAnja Sanchez";
+
+      let entries = loadEntries();
+      let editingId = null;
+
+      function pad2(n){ return String(n).padStart(2,"0"); }
+
+      function todayISO(){
+        const d = new Date();
+        const yyyy = d.getFullYear();
+        const mm = pad2(d.getMonth()+1);
+        const dd = pad2(d.getDate());
+        return `${yyyy}-${mm}-${dd}`;
+      }
+
+      function formatDE(iso){
+        if(!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso || "";
+        const [y,m,d] = iso.split("-");
+        return `${d}.${m}.${y}`;
+      }
+
+      function encodeRFC3986(str){
+        return encodeURIComponent(str)
+          .replace(/[!'()*]/g, c => '%' + c.charCodeAt(0).toString(16).toUpperCase());
+      }
+
+      function openEmailDraft(to, subject, body){
+        const mailto = `mailto:${encodeRFC3986(to)}?subject=${encodeRFC3986(subject)}&body=${encodeRFC3986(body)}`;
+        window.location.href = mailto;
+      }
+
+      function saveEntries(){
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+      }
+
+      function loadEntries(){
+        try{
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if(!raw) return [];
+          const parsed = JSON.parse(raw);
+          return Array.isArray(parsed) ? parsed : [];
+        }catch{
+          return [];
+        }
+      }
+
+      function setMode(editing){
+        modeBadge.textContent = editing ? "Bearbeiten" : "Neu";
+      }
+
+      function setKrankBisEnabled(){
+        const enabled = krankgemeldetEl.checked;
+        krankBisEl.disabled = !enabled;
+        if(!enabled) krankBisEl.value = "";
+      }
+
+      function clearForm(){
+        form.reset();
+        datumEl.value = "";
+        editingId = null;
+        setMode(false);
+        setKrankBisEnabled();
+      }
+
+      function getSelectedStatuses(){
+        const s = [];
+        if(dienstabbruchEl.checked) s.push("Dienstabbruch");
+        if(krankgemeldetEl.checked) s.push("Krankgemeldet");
+        if(wiederEl.checked) s.push("Wieder zur Arbeit");
+        return s;
+      }
+
+      function readForm(){
+        const name = (nameEl.value || "").trim();
+        const vorname = (vornameEl.value || "").trim();
+        const datum = datumEl.value;
+        const statuses = getSelectedStatuses();
+        const krankBis = krankBisEl.value || "";
+        return { name, vorname, datum, statuses, krankBis };
+      }
+
+      function validate(data){
+        if(!data.name) return "Bitte Name ausfüllen.";
+        if(!data.vorname) return "Bitte Vorname ausfüllen.";
+        if(!data.datum) return "Bitte Datum auswählen.";
+        return null;
+      }
+
+      function upsertEntry(data){
+        const now = Date.now();
+        if(editingId){
+          const idx = entries.findIndex(e => e.id === editingId);
+          if(idx !== -1){
+            entries[idx] = { ...entries[idx], ...data, updatedAt: now };
+          }
+        }else{
+          const id = crypto?.randomUUID ? crypto.randomUUID() : String(now) + "_" + Math.random().toString(16).slice(2);
+          entries.unshift({ id, ...data, createdAt: now, updatedAt: now });
+        }
+        saveEntries();
+        render();
+      }
+
+      function startEdit(id){
+        const e = entries.find(x => x.id === id);
+        if(!e) return;
+        editingId = id;
+        setMode(true);
+
+        nameEl.value = e.name || "";
+        vornameEl.value = e.vorname || "";
+        datumEl.value = e.datum || "";
+
+        heuteEl.checked = (e.datum === todayISO());
+
+        dienstabbruchEl.checked = (e.statuses || []).includes("Dienstabbruch");
+        krankgemeldetEl.checked = (e.statuses || []).includes("Krankgemeldet");
+        wiederEl.checked = (e.statuses || []).includes("Wieder zur Arbeit");
+
+        krankBisEl.value = e.krankBis || "";
+        setKrankBisEnabled();
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      function removeEntry(id){
+        entries = entries.filter(e => e.id !== id);
+        if(editingId === id) clearForm();
+        saveEntries();
+        render();
+      }
+
+      function getStatusTextForEntry(status, entry){
+        if(status === "Krankgemeldet"){
+          if(entry.krankBis && String(entry.krankBis).trim() !== ""){
+            return `Krankgemeldet bis ${formatDE(entry.krankBis)}`;
+          }
+          return "Krankgemeldet";
+        }
+        return status;
+      }
+
+      function getStatusClass(status){
+        if(status === "Krankgemeldet") return "bad";
+        if(status === "Wieder zur Arbeit") return "ok";
+        if(status === "Dienstabbruch") return "warn";
+        return "";
+      }
+
+      function render(){
+        listEl.innerHTML = "";
+        countEl.textContent = String(entries.length);
+        emptyEl.style.display = entries.length ? "none" : "block";
+
+        for(const e of entries){
+          const item = document.createElement("div");
+          item.className = "item";
+
+          const meta = document.createElement("div");
+          meta.className = "meta";
+
+          const top = document.createElement("div");
+          top.className = "top";
+
+          const name = document.createElement("div");
+          name.className = "name";
+          name.title = `${e.name || ""}, ${e.vorname || ""}`;
+          name.textContent = `${e.name || ""}, ${e.vorname || ""}`.trim();
+
+          const date = document.createElement("div");
+          date.className = "date";
+          date.textContent = formatDE(e.datum);
+
+          top.appendChild(name);
+          top.appendChild(date);
+
+          const status = document.createElement("div");
+          status.className = "status";
+
+          const baseStatuses = (e.statuses && e.statuses.length) ? e.statuses : ["Keine Angabe"];
+          for(const s of baseStatuses){
+            const pill = document.createElement("div");
+            pill.className = "pill";
+            const cls = getStatusClass(s);
+            if(cls) pill.classList.add(cls);
+            pill.textContent = (s === "Keine Angabe") ? "Keine Angabe" : getStatusTextForEntry(s, e);
+            status.appendChild(pill);
+          }
+
+          meta.appendChild(top);
+          meta.appendChild(status);
+
+          const actions = document.createElement("div");
+          actions.className = "actions";
+
+          const editBtn = document.createElement("button");
+          editBtn.type = "button";
+          editBtn.className = "mini";
+          editBtn.textContent = "Bearbeiten";
+          editBtn.addEventListener("click", () => startEdit(e.id));
+
+          const delBtn = document.createElement("button");
+          delBtn.type = "button";
+          delBtn.className = "mini danger";
+          delBtn.textContent = "Löschen";
+          delBtn.addEventListener("click", () => {
+            if(confirm("Eintrag wirklich löschen?")) removeEntry(e.id);
+          });
+
+          actions.appendChild(editBtn);
+          actions.appendChild(delBtn);
+
+          item.appendChild(meta);
+          item.appendChild(actions);
+          listEl.appendChild(item);
+        }
+      }
+
+      function buildEmailForAll(allEntries){
+        const subject = "Krankmeldung";
+        const lines = [];
+
+        for(let i = 0; i < allEntries.length; i++){
+          const e = allEntries[i];
+
+          const baseStatuses = (e.statuses && e.statuses.length) ? e.statuses : [];
+          const statusText = baseStatuses.length
+            ? baseStatuses.map(s => getStatusTextForEntry(s, e)).join(", ")
+            : "Keine Angabe";
+
+          lines.push(`${i+1}. ${e.name}, ${e.vorname} hat am ${formatDE(e.datum)}: ${statusText}`);
+        }
+
+        const body =
+`${lines.join("\n")}
+
+${SIGNATURE}`;
+
+        return { subject, body };
+      }
+
+      async function clearAppCacheAndReload(){
+        const ok = confirm("Wirklich Cache/Local-Daten dieser Seite löschen? (Einträge gehen verloren)");
+        if(!ok) return;
+
+        try{
+          localStorage.removeItem(STORAGE_KEY);
+          if("caches" in window){
+            const keys = await caches.keys();
+            await Promise.all(keys.map(k => caches.delete(k)));
+          }
+        }catch(e){
+          // ignore
+        } finally {
+          window.location.reload();
+        }
+      }
+
+      // Robust: setzt Datum + feuert Events (hilft speziell bei iOS/WebKit)
+      function applyHeute(){
+        if(!heuteEl.checked) return;
+        datumEl.value = todayISO();
+        datumEl.dispatchEvent(new Event("input", { bubbles: true }));
+        datumEl.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+
+      /** Events */
+
+      // Standard (sollte überall reichen)
+      heuteEl.addEventListener("change", applyHeute);
+
+      // Fallbacks (für den Fall, dass ein Browser "change" verspätet auslöst)
+      const applyHeuteAfterToggle = () => requestAnimationFrame(applyHeute);
+      heuteEl.addEventListener("click", applyHeuteAfterToggle);
+      heuteEl.addEventListener("pointerup", applyHeuteAfterToggle);
+      heuteEl.addEventListener("touchend", applyHeuteAfterToggle, { passive: true });
+
+      // Wenn Datum manuell geändert wird, "Heute" passend setzen
+      datumEl.addEventListener("input", () => {
+        heuteEl.checked = (datumEl.value === todayISO());
+      });
+
+      krankgemeldetEl.addEventListener("change", setKrankBisEnabled);
+
+      resetBtn.addEventListener("click", clearForm);
+
+      emailBtn.addEventListener("click", () => {
+        if(!entries.length){
+          alert("Keine Einträge vorhanden. Bitte zuerst Einträge speichern (Bestätigen).");
+          return;
+        }
+        const { subject, body } = buildEmailForAll(entries);
+        openEmailDraft(MAIL_TO, subject, body);
+      });
+
+      clearCacheBtn.addEventListener("click", clearAppCacheAndReload);
+
+      form.addEventListener("submit", (ev) => {
+        ev.preventDefault();
+        const data = readForm();
+        const err = validate(data);
+        if(err){
+          alert(err);
+          return;
+        }
+        upsertEntry(data);
+        clearForm();
+      });
+
+      /** Init */
+      datumEl.value = todayISO();
+      heuteEl.checked = true;
+      applyHeute();
+      setKrankBisEnabled();
+
+      setMode(false);
+      render();
+    })();
+  </script>
+</body>
+</html>
