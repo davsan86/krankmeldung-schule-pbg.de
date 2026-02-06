@@ -95,6 +95,7 @@
       background: rgba(0,0,0,.18);
       color: var(--text);
       outline:none;
+      min-width: 0; /* wichtig für Grid/Flex (Desktop) */
     }
     input[type="text"]::placeholder{ color: rgba(231,236,255,.45); }
     input:focus{ border-color: rgba(106,167,255,.55); box-shadow: 0 0 0 3px rgba(106,167,255,.18); }
@@ -122,7 +123,7 @@
         gap:12px 16px;
       }
       .checks > .checks-title{ grid-column: 1 / -1; }
-      .check-inline{ grid-column: 1 / -1; } /* Krankgemeldet über volle Breite */
+      .check-inline{ grid-column: 1 / -1; }
     }
 
     .checks-title{
@@ -137,6 +138,7 @@
       gap:12px;
       align-items:start;
       min-height:44px;
+      min-width: 0;
     }
     .check input{
       margin:6px 0 0 2px;
@@ -148,6 +150,7 @@
       cursor:pointer;
       display:block;
       user-select:none;
+      min-width: 0;
     }
     .cbtext span{
       font-size:14px;
@@ -163,44 +166,49 @@
       line-height:1.25;
     }
 
-    /* Krankgemeldet-Zeile: links "Krankgemeldet", rechts Bis-Block */
+    /* Krankgemeldet-Zeile */
     .check-inline-content{
       display:grid;
       grid-template-columns: 1fr;
       gap:10px;
       width:100%;
       align-items:start;
+      min-width: 0;
     }
     @media (min-width: 760px){
       .check-inline-content{
-        grid-template-columns: 240px 1fr;
+        /* etwas kompakter, damit es auch in 460px Form-Spalte sauber passt */
+        grid-template-columns: 200px 1fr;
         align-items:start;
         column-gap:16px;
       }
     }
 
-    /* FIX: Bis-Block immer vertikal (Label oben, Feld unten) -> iPad stabil */
+    /* Bis-Block: IMMER vertikal (Label oben, Feld unten) */
     .bis-block{
       display:flex;
       flex-direction:column;
       gap:6px;
       width:100%;
-      min-width: 280px; /* verhindert Kollaps in iPad Date-Input */
+      min-width: 0; /* ✅ Desktop: darf schrumpfen -> kein Abschneiden mehr */
     }
-    @media (max-width: 520px){
-      .bis-block{ min-width: 0; }
+
+    /* ✅ Nur auf Touch/iPad: Mindestbreite erzwingen, um Mini-Date-Feld zu vermeiden */
+    @media (hover: none) and (pointer: coarse) and (min-width: 760px){
+      .bis-block{ min-width: 280px; }
     }
 
     .inline-label{
       margin:0;
       font-size:12px;
       color:var(--muted);
-      white-space:normal; /* darf umbrechen */
+      white-space:normal;
       line-height:1.2;
     }
 
     #krankBis{
       width:100%;
+      min-width: 0;
     }
 
     /* ===== Buttons ===== */
@@ -211,14 +219,9 @@
       gap:10px;
     }
     @media (min-width: 560px){
-      .btns{
-        grid-template-columns: 1fr 1fr 1fr;
-      }
+      .btns{ grid-template-columns: 1fr 1fr 1fr; }
     }
-    .btns-secondary{
-      margin-top:10px;
-      display:block;
-    }
+    .btns-secondary{ margin-top:10px; display:block; }
 
     button{
       cursor:pointer;
