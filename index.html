@@ -26,7 +26,7 @@
       color:var(--text);
     }
     header{
-      padding:24px 16px 8px;
+      padding:20px 16px 8px;
       max-width:1100px;
       margin:0 auto;
     }
@@ -41,6 +41,8 @@
       font-size:14px;
       line-height:1.35;
     }
+
+    /* Layout: auf iPad lieber 1-spaltig, erst auf großem Desktop 2-spaltig */
     .wrap{
       max-width:1100px;
       margin:0 auto;
@@ -49,9 +51,10 @@
       grid-template-columns: 1fr;
       gap:16px;
     }
-    @media (min-width: 980px){
-      .wrap{ grid-template-columns: 420px 1fr; align-items:start; }
+    @media (min-width: 1200px){
+      .wrap{ grid-template-columns: 440px 1fr; align-items:start; }
     }
+
     .card{
       background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
       border:1px solid var(--line);
@@ -98,7 +101,7 @@
     input:disabled{ opacity:.55; cursor:not-allowed; }
 
     .row{ display:grid; grid-template-columns:1fr; gap:12px; }
-    @media (min-width: 420px){ .row.two{ grid-template-columns:1fr 1fr; } }
+    @media (min-width: 560px){ .row.two{ grid-template-columns:1fr 1fr; } }
 
     .checks{
       margin-top:12px;
@@ -111,15 +114,26 @@
       background: rgba(0,0,0,.12);
     }
 
+    /* Tablet: Optionen als 2 Spalten (besserer Platzverbrauch), Krankgemeldet über volle Breite */
+    @media (min-width: 720px) and (max-width: 1199px){
+      .checks{
+        grid-template-columns: 1fr 1fr;
+        gap:12px 16px;
+      }
+      .check-inline{ grid-column: 1 / -1; }
+      .checks > label{ grid-column: 1 / -1; }
+    }
+
     .check{
       display:flex;
-      gap:10px;
+      gap:12px;
       align-items:flex-start;
       user-select:none;
+      min-height: 40px; /* touch target */
     }
     .check input{
-      margin-top:2px;
-      transform: scale(1.12);
+      margin-top:4px;
+      transform: scale(1.18);
       flex: 0 0 auto;
     }
     .check .cbtext{
@@ -127,7 +141,7 @@
       cursor:pointer;
     }
     .check .cbtext span{
-      font-size:13px;
+      font-size:14px;
       color:var(--text);
       display:block;
       line-height:1.25;
@@ -136,21 +150,22 @@
       display:block;
       color:var(--muted);
       font-size:12px;
-      margin-top:2px;
+      margin-top:3px;
       line-height:1.25;
     }
 
+    /* Krankgemeldet + Bis */
     .check-inline{ align-items:flex-start; }
     .check-inline-content{
       display:flex;
-      gap:10px;
-      align-items:center;
+      gap:14px;
+      align-items:flex-start;
       flex-wrap:wrap;
       width:100%;
     }
     .inline-field{
       display:flex;
-      gap:8px;
+      gap:10px;
       align-items:center;
       flex-wrap:wrap;
     }
@@ -161,15 +176,16 @@
       white-space:nowrap;
     }
     .inline-date{
-      width: 175px;
+      width: 220px;
       padding:10px 10px;
       border-radius: 12px;
     }
-    @media (max-width: 420px){
+    @media (max-width: 520px){
       .inline-date{ width:100%; }
       .inline-label{ white-space:normal; }
     }
 
+    /* Buttons: auf iPad als Grid */
     .btns{
       margin-top:16px;
       display:flex;
@@ -183,6 +199,20 @@
       flex-wrap:wrap;
     }
 
+    @media (min-width: 720px) and (max-width: 1199px){
+      .btns{
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        gap:10px;
+      }
+      /* Zurücksetzen / Bestätigen in Reihe 1, E-Mail Entwurf volle Breite */
+      #resetBtn{ grid-column: 1; }
+      #confirmBtn{ grid-column: 2; }
+      #emailBtn{ grid-column: 1 / -1; justify-content:center; }
+      .btns-secondary{ display:block; }
+      #clearCacheBtn{ width:100%; justify-content:center; }
+    }
+
     button{
       cursor:pointer;
       border-radius: 14px;
@@ -194,8 +224,10 @@
       letter-spacing:.2px;
       display:inline-flex;
       align-items:center;
+      justify-content:center;
       gap:10px;
       transition: transform .06s ease, border-color .12s ease, background .12s ease;
+      min-height: 44px; /* iOS guideline */
     }
     button:active{ transform: translateY(1px); }
     .primary{
@@ -224,10 +256,10 @@
       grid-template-columns: 1fr;
       gap:10px;
     }
-    @media (min-width: 560px){
+    @media (min-width: 700px){
       .item{ grid-template-columns: 1fr auto; align-items:center; }
     }
-    .meta{ display:flex; flex-direction:column; gap:4px; min-width:0; }
+    .meta{ display:flex; flex-direction:column; gap:6px; min-width:0; }
     .meta .top{ display:flex; gap:10px; align-items:baseline; flex-wrap:wrap; }
     .name{
       font-weight:800;
@@ -236,6 +268,7 @@
       text-overflow:ellipsis;
       white-space:nowrap;
       max-width: 100%;
+      font-size: 16px;
     }
     .date{ color:var(--muted); font-size:12px; white-space:nowrap; }
     .status{ display:flex; gap:8px; flex-wrap:wrap; }
@@ -252,7 +285,7 @@
     .pill.warn{ border-color: rgba(255,214,106,.45); background: rgba(255,214,106,.10); }
     .pill.bad{ border-color: rgba(255,106,106,.45); background: rgba(255,106,106,.10); }
     .actions{ display:flex; gap:8px; justify-content:flex-end; flex-wrap:wrap; }
-    .mini{ padding:10px 12px; font-size:13px; }
+    .mini{ padding:10px 12px; font-size:13px; min-height: 40px; }
     .empty{ color:var(--muted); font-size:13px; padding:10px 2px; }
     footer{
       max-width:1100px;
@@ -392,8 +425,6 @@
       const datumEl = $("datum");
 
       const heuteEl = $("heute");
-      const heuteLabelEl = $("heuteLabel");
-
       const dienstabbruchEl = $("dienstabbruch");
       const krankgemeldetEl = $("krankgemeldet");
       const krankBisEl = $("krankBis");
@@ -409,7 +440,6 @@
       const clearCacheBtn = $("clearCacheBtn");
 
       const MAIL_TO = "davsan86@gmail.com";
-
       const EMAIL_GREETING = "Sehr geehrte Damen und Herren,";
       const EMAIL_CLOSING = "Mit freundlichen Grüßen,\nAnja Sanchez";
 
@@ -581,7 +611,6 @@
             if(s === "Wieder zur Arbeit") pill.classList.add("ok");
             if(s === "Dienstabbruch") pill.classList.add("warn");
 
-            // Anzeige in der Liste darf kompakt bleiben:
             if(s === "Krankgemeldet" && e.krankBis){
               pill.textContent = `Krankgemeldet bis ${formatDE(e.krankBis)}`;
             } else {
@@ -643,7 +672,6 @@
           return "keine Angabe gemacht";
         }
 
-        // Lesbares Deutsch: "a, b und c"
         if(parts.length === 1) return parts[0];
         if(parts.length === 2) return `${parts[0]} und ${parts[1]}`;
         return `${parts.slice(0, -1).join(", ")} und ${parts[parts.length - 1]}`;
@@ -686,7 +714,6 @@ ${EMAIL_CLOSING}`;
         }
       }
 
-      // Robust: setzt Datum + feuert Events (hilft speziell bei iOS/WebKit)
       function applyHeute(){
         if(!heuteEl.checked) return;
         datumEl.value = todayISO();
@@ -694,9 +721,7 @@ ${EMAIL_CLOSING}`;
         datumEl.dispatchEvent(new Event("change", { bubbles: true }));
       }
 
-      /** Events */
       heuteEl.addEventListener("change", applyHeute);
-
       const applyHeuteAfterToggle = () => requestAnimationFrame(applyHeute);
       heuteEl.addEventListener("click", applyHeuteAfterToggle);
       heuteEl.addEventListener("pointerup", applyHeuteAfterToggle);
@@ -733,7 +758,6 @@ ${EMAIL_CLOSING}`;
         clearForm();
       });
 
-      /** Init */
       datumEl.value = todayISO();
       heuteEl.checked = true;
       applyHeute();
