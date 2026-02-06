@@ -103,7 +103,7 @@
     .row{ display:grid; grid-template-columns:1fr; gap:12px; }
     @media (min-width: 560px){ .row.two{ grid-template-columns:1fr 1fr; } }
 
-    /* ===== Optionen / Checkboxen (iPad Fix) ===== */
+    /* ===== Optionen / Checkboxen ===== */
     .checks{
       margin-top:12px;
       padding:12px;
@@ -122,7 +122,7 @@
         gap:12px 16px;
       }
       .checks > .checks-title{ grid-column: 1 / -1; }
-      .check-inline{ grid-column: 1 / -1; }
+      .check-inline{ grid-column: 1 / -1; } /* Krankgemeldet über volle Breite */
     }
 
     .checks-title{
@@ -163,7 +163,7 @@
       line-height:1.25;
     }
 
-    /* Krankgemeldet-Zeile */
+    /* Krankgemeldet-Zeile: links "Krankgemeldet", rechts Bis-Block */
     .check-inline-content{
       display:grid;
       grid-template-columns: 1fr;
@@ -174,37 +174,33 @@
     @media (min-width: 760px){
       .check-inline-content{
         grid-template-columns: 240px 1fr;
-        align-items:center;
+        align-items:start;
         column-gap:16px;
       }
     }
 
+    /* FIX: Bis-Block immer vertikal (Label oben, Feld unten) -> iPad stabil */
     .bis-block{
-      display:grid;
-      grid-template-columns: 1fr;
+      display:flex;
+      flex-direction:column;
       gap:6px;
       width:100%;
+      min-width: 280px; /* verhindert Kollaps in iPad Date-Input */
     }
-
-    /* FIX: iPad/Tablet – Date-Feld darf nicht kollabieren */
-    @media (min-width: 760px){
-      .bis-block{
-        grid-template-columns: 1fr minmax(240px, 360px);
-        align-items:center;
-        gap:10px;
-        justify-items:stretch; /* statt end -> verhindert shrink */
-      }
-      #krankBis{
-        min-width:240px;       /* verhindert „13“-Mini-Feld */
-        width:100%;
-      }
+    @media (max-width: 520px){
+      .bis-block{ min-width: 0; }
     }
 
     .inline-label{
       margin:0;
       font-size:12px;
       color:var(--muted);
-      white-space:normal; /* nicht abschneiden, lieber umbrechen */
+      white-space:normal; /* darf umbrechen */
+      line-height:1.2;
+    }
+
+    #krankBis{
+      width:100%;
     }
 
     /* ===== Buttons ===== */
@@ -250,7 +246,6 @@
       border-color: rgba(255,106,106,.55);
       background: rgba(255,106,106,.10);
     }
-
     #clearCacheBtn{ width:100%; }
 
     .hint{
