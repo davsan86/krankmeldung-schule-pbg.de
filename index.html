@@ -95,6 +95,7 @@
     }
     input[type="text"]::placeholder{ color: rgba(231,236,255,.45); }
     input:focus{ border-color: rgba(106,167,255,.55); box-shadow: 0 0 0 3px rgba(106,167,255,.18); }
+    input:disabled{ opacity:.55; cursor:not-allowed; }
 
     .row{ display:grid; grid-template-columns:1fr; gap:12px; }
     @media (min-width: 420px){ .row.two{ grid-template-columns:1fr 1fr; } }
@@ -113,6 +114,37 @@
     .check input{ margin-top:2px; transform: scale(1.12); }
     .check span{ font-size:13px; color:var(--text); }
     .check small{ display:block; color:var(--muted); font-size:12px; margin-top:2px; }
+
+    /* Inline "Bis"-Datum neben Krankgemeldet */
+    .check-inline{ align-items:flex-start; }
+    .check-inline-content{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      width:100%;
+    }
+    .inline-field{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .inline-label{
+      margin:0;
+      font-size:12px;
+      color:var(--muted);
+      white-space:nowrap;
+    }
+    .inline-date{
+      width: 175px;
+      padding:10px 10px;
+      border-radius: 12px;
+    }
+    @media (max-width: 420px){
+      .inline-date{ width:100%; }
+      .inline-label{ white-space:normal; }
+    }
 
     .btns{
       margin-top:16px;
@@ -257,9 +289,16 @@
               <div><span>Dienstabbruch</span></div>
             </div>
 
-            <div class="check">
+            <!-- Krankgemeldet + Bis-Datum -->
+            <div class="check check-inline">
               <input id="krankgemeldet" type="checkbox" />
-              <div><span>Krankgemeldet</span></div>
+              <div class="check-inline-content">
+                <span>Krankgemeldet</span>
+                <div class="inline-field">
+                  <label class="inline-label" for="krankBis">Bis (Datum krankgemeldet)</label>
+                  <input id="krankBis" class="inline-date" type="date" />
+                </div>
+              </div>
             </div>
 
             <div class="check">
@@ -268,14 +307,16 @@
             </div>
           </div>
 
+          <!-- Button-Reihenfolge: Zurücksetzen, Bestätigen, E-Mail Entwurf -->
           <div class="btns">
             <button type="button" class="danger" id="resetBtn">Zurücksetzen</button>
-            <button type="button" id="emailBtn">E-Mail Entwurf</button>
             <button type="submit" class="primary" id="confirmBtn">Bestätigen</button>
+            <button type="button" id="emailBtn">E-Mail Entwurf</button>
           </div>
 
           <div class="hint">
             „E-Mail Entwurf“ erstellt eine Mail mit <b>allen</b> Einträgen der Liste (neueste zuerst).
+            Das „Bis“-Datum wird nur ausgegeben, wenn es gefüllt ist.
           </div>
         </form>
       </div>
@@ -314,6 +355,7 @@
       const heuteEl = $("heute");
       const dienstabbruchEl = $("dienstabbruch");
       const krankgemeldetEl = $("krankgemeldet");
+      const krankBisEl = $("krankBis");
       const wiederEl = $("wieder");
 
       const listEl = $("list");
@@ -347,14 +389,6 @@
         return `${d}.${m}.${y}`;
       }
 
-      function getSelectedStatuses(){
-        const s = [];
-        if(dienstabbruchEl.checked) s.push("Dienstabbruch");
-        if(krankgemeldetEl.checked) s.push("Krankgemeldet");
-        if(wiederEl.checked) s.push("Wieder zur Arbeit");
-        return s;
-      }
-
       function encodeRFC3986(str){
         return encodeURIComponent(str)
           .replace(/[!'()*]/g, c => '%' + c.charCodeAt(0).toString(16).toUpperCase());
@@ -383,11 +417,28 @@
         modeBadge.textContent = editing ? "Bearbeiten" : "Neu";
       }
 
+      function setKrankBisEnabled(){
+        const enabled = krankgemeldetEl.checked;
+        krankBisEl.disabled = !enabled;
+        if(!enabled){
+          krankBisEl.value = "";
+        }
+      }
+
       function clearForm(){
         form.reset();
         datumEl.value = "";
         editingId = null;
         setMode(false);
+        setKrankBisEnabled();
+      }
+
+      function getSelectedStatuses(){
+        const s = [];
+        if(dienstabbruchEl.checked) s.push("Dienstabbruch");
+        if(krankgemeldetEl.checked) s.push("Krankgemeldet");
+        if(wiederEl.checked) s.push("Wieder zur Arbeit");
+        return s;
       }
 
       function readForm(){
@@ -395,7 +446,8 @@
         const vorname = (vornameEl.value || "").trim();
         const datum = datumEl.value;
         const statuses = getSelectedStatuses();
-        return { name, vorname, datum, statuses };
+        const krankBis = krankBisEl.value || ""; // YYYY-MM-DD oder ""
+        return { name, vorname, datum, statuses, krankBis };
       }
 
       function validate(data){
@@ -426,16 +478,19 @@
         editingId = id;
         setMode(true);
 
-        nameEl.value = e.name;
-        vornameEl.value = e.vorname;
-        datumEl.value = e.datum;
+        nameEl.value = e.name || "";
+        vornameEl.value = e.vorname || "";
+        datumEl.value = e.datum || "";
 
-        const isToday = e.datum === todayISO();
+        const isToday = (e.datum === todayISO());
         heuteEl.checked = isToday;
 
-        dienstabbruchEl.checked = e.statuses.includes("Dienstabbruch");
-        krankgemeldetEl.checked = e.statuses.includes("Krankgemeldet");
-        wiederEl.checked = e.statuses.includes("Wieder zur Arbeit");
+        dienstabbruchEl.checked = (e.statuses || []).includes("Dienstabbruch");
+        krankgemeldetEl.checked = (e.statuses || []).includes("Krankgemeldet");
+        wiederEl.checked = (e.statuses || []).includes("Wieder zur Arbeit");
+
+        krankBisEl.value = e.krankBis || "";
+        setKrankBisEnabled();
 
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
@@ -445,6 +500,24 @@
         if(editingId === id) clearForm();
         saveEntries();
         render();
+      }
+
+      function getStatusTextForEntry(status, entry){
+        if(status === "Krankgemeldet"){
+          // "Bis" nur angeben, wenn gefüllt
+          if(entry.krankBis && String(entry.krankBis).trim() !== ""){
+            return `Krankgemeldet bis ${formatDE(entry.krankBis)}`;
+          }
+          return "Krankgemeldet";
+        }
+        return status;
+      }
+
+      function getStatusClass(status){
+        if(status === "Krankgemeldet") return "bad";
+        if(status === "Wieder zur Arbeit") return "ok";
+        if(status === "Dienstabbruch") return "warn";
+        return "";
       }
 
       function render(){
@@ -464,8 +537,8 @@
 
           const name = document.createElement("div");
           name.className = "name";
-          name.title = `${e.name}, ${e.vorname}`;
-          name.textContent = `${e.name}, ${e.vorname}`;
+          name.title = `${e.name || ""}, ${e.vorname || ""}`;
+          name.textContent = `${e.name || ""}, ${e.vorname || ""}`.trim();
 
           const date = document.createElement("div");
           date.className = "date";
@@ -477,14 +550,13 @@
           const status = document.createElement("div");
           status.className = "status";
 
-          const statuses = e.statuses.length ? e.statuses : ["Keine Angabe"];
-          for(const s of statuses){
+          const baseStatuses = (e.statuses && e.statuses.length) ? e.statuses : ["Keine Angabe"];
+          for(const s of baseStatuses){
             const pill = document.createElement("div");
             pill.className = "pill";
-            if(s === "Krankgemeldet") pill.classList.add("bad");
-            if(s === "Wieder zur Arbeit") pill.classList.add("ok");
-            if(s === "Dienstabbruch") pill.classList.add("warn");
-            pill.textContent = s;
+            const cls = getStatusClass(s);
+            if(cls) pill.classList.add(cls);
+            pill.textContent = (s === "Keine Angabe") ? "Keine Angabe" : getStatusTextForEntry(s, e);
             status.appendChild(pill);
           }
 
@@ -517,15 +589,20 @@
         }
       }
 
-      // NEU: Mailtext aus ALLEN Einträgen bauen
+      // Mailtext aus ALLEN Einträgen bauen
       function buildEmailForAll(allEntries){
         const subject = "Krankmeldung";
         const lines = [];
 
         for(let i = 0; i < allEntries.length; i++){
           const e = allEntries[i];
-          const statuses = (e.statuses && e.statuses.length) ? e.statuses.join(", ") : "Keine Angabe";
-          lines.push(`${i+1}. ${e.name}, ${e.vorname} hat am ${formatDE(e.datum)}: ${statuses}`);
+
+          const baseStatuses = (e.statuses && e.statuses.length) ? e.statuses : [];
+          const statusText = baseStatuses.length
+            ? baseStatuses.map(s => getStatusTextForEntry(s, e)).join(", ")
+            : "Keine Angabe";
+
+          lines.push(`${i+1}. ${e.name}, ${e.vorname} hat am ${formatDE(e.datum)}: ${statusText}`);
         }
 
         const body =
@@ -544,6 +621,10 @@ ${SIGNATURE}`;
       });
       datumEl.addEventListener("input", () => {
         heuteEl.checked = (datumEl.value === todayISO());
+      });
+
+      krankgemeldetEl.addEventListener("change", () => {
+        setKrankBisEnabled();
       });
 
       resetBtn.addEventListener("click", () => {
@@ -576,6 +657,9 @@ ${SIGNATURE}`;
       /** Init */
       datumEl.value = todayISO();
       heuteEl.checked = true;
+
+      // Beim Start: "Bis" deaktivieren, bis Krankgemeldet gesetzt ist
+      setKrankBisEnabled();
 
       setMode(false);
       render();
