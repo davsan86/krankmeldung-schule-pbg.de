@@ -95,7 +95,7 @@
       background: rgba(0,0,0,.18);
       color: var(--text);
       outline:none;
-      min-width: 0; /* wichtig für Grid/Flex (Desktop) */
+      min-width: 0;
     }
     input[type="text"]::placeholder{ color: rgba(231,236,255,.45); }
     input:focus{ border-color: rgba(106,167,255,.55); box-shadow: 0 0 0 3px rgba(106,167,255,.18); }
@@ -107,7 +107,7 @@
     /* ===== Optionen / Checkboxen ===== */
     .checks{
       margin-top:12px;
-      padding:12px;
+      padding:10px; /* kleiner als vorher -> kompakter */
       border-radius: 14px;
       border:1px dashed rgba(255,255,255,.16);
       background: rgba(0,0,0,.12);
@@ -120,7 +120,7 @@
     @media (min-width: 760px){
       .checks{
         grid-template-columns: 1fr 1fr;
-        gap:12px 16px;
+        gap:10px 14px; /* etwas enger */
       }
       .checks > .checks-title{ grid-column: 1 / -1; }
       .check-inline{ grid-column: 1 / -1; }
@@ -134,15 +134,15 @@
 
     .check{
       display:grid;
-      grid-template-columns: 28px 1fr;
-      gap:12px;
-      align-items:start;
-      min-height:44px;
+      grid-template-columns: 26px 1fr; /* minimal kompakter */
+      gap:10px; /* enger */
+      align-items:center; /* kompakter: zentriert statt "start" */
+      min-height:40px; /* weniger hoch */
       min-width: 0;
     }
     .check input{
-      margin:6px 0 0 2px;
-      transform: scale(1.2);
+      margin:0 0 0 2px; /* weniger Versatz */
+      transform: scale(1.15);
       width:18px;
       height:18px;
     }
@@ -166,36 +166,45 @@
       line-height:1.25;
     }
 
-    /* Krankgemeldet-Zeile */
-    .check-inline-content{
+    /* Heute + Dienstabbruch links untereinander */
+    .check-stack{
+      grid-column: 1 / -1;
       display:grid;
       grid-template-columns: 1fr;
       gap:10px;
+      min-width:0;
+    }
+    @media (min-width: 760px){
+      .check-stack{ grid-column: 1 / 2; }
+    }
+
+    /* Krankgemeldet-Zeile: kompakter zusammen */
+    .check-inline-content{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:8px; /* enger */
       width:100%;
-      align-items:start;
+      align-items:center;
       min-width: 0;
     }
     @media (min-width: 760px){
       .check-inline-content{
-        /* etwas kompakter, damit es auch in 460px Form-Spalte sauber passt */
-        grid-template-columns: 200px 1fr;
-        align-items:start;
-        column-gap:16px;
+        grid-template-columns: 160px 1fr; /* linke Spalte kleiner -> weniger Leerraum */
+        column-gap:10px; /* enger */
       }
     }
 
-    /* Bis-Block: IMMER vertikal (Label oben, Feld unten) */
+    /* Bis-Block immer vertikal, aber kompakter */
     .bis-block{
       display:flex;
       flex-direction:column;
-      gap:6px;
+      gap:4px; /* enger */
       width:100%;
-      min-width: 0; /* ✅ Desktop: darf schrumpfen -> kein Abschneiden mehr */
+      min-width: 0;
     }
-
-    /* ✅ Nur auf Touch/iPad: Mindestbreite erzwingen, um Mini-Date-Feld zu vermeiden */
+    /* Nur Touch/iPad: Mindestbreite damit Date-Input nicht "mini" wird */
     @media (hover: none) and (pointer: coarse) and (min-width: 760px){
-      .bis-block{ min-width: 280px; }
+      .bis-block{ min-width: 260px; } /* leicht reduziert, reicht i.d.R. */
     }
 
     .inline-label{
@@ -203,13 +212,10 @@
       font-size:12px;
       color:var(--muted);
       white-space:normal;
-      line-height:1.2;
+      line-height:1.15;
     }
 
-    #krankBis{
-      width:100%;
-      min-width: 0;
-    }
+    #krankBis{ width:100%; min-width:0; }
 
     /* ===== Buttons ===== */
     .btns{
@@ -354,19 +360,20 @@
           <div class="checks" role="group" aria-label="Checkboxen">
             <div class="checks-title">Optionen</div>
 
-            <div class="check">
-              <input id="heute" type="checkbox" />
-              <label id="heuteLabel" class="cbtext" for="heute">
-                <span>Heute</span>
-                <small>Setzt automatisch das heutige Datum ins Datumsfeld.</small>
-              </label>
-            </div>
+            <div class="check-stack" aria-label="Heute und Dienstabbruch">
+              <div class="check">
+                <input id="heute" type="checkbox" />
+                <label id="heuteLabel" class="cbtext" for="heute">
+                  <span>Heute</span>
+                </label>
+              </div>
 
-            <div class="check">
-              <input id="dienstabbruch" type="checkbox" />
-              <label class="cbtext" for="dienstabbruch">
-                <span>Dienstabbruch</span>
-              </label>
+              <div class="check">
+                <input id="dienstabbruch" type="checkbox" />
+                <label class="cbtext" for="dienstabbruch">
+                  <span>Dienstabbruch</span>
+                </label>
+              </div>
             </div>
 
             <div class="check check-inline">
