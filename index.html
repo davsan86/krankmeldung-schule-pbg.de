@@ -257,7 +257,7 @@
   <header>
     <h1>Krankmeldungen Schule</h1>
     <p class="sub">
-      Einträge lokal verwalten (Hinzufügen/Bearbeiten/Löschen) und per Button eine E-Mail zum Versand öffnen.
+      Einträge lokal verwalten (Hinzufügen/Bearbeiten/Löschen) und per Button einen E-Mail-Entwurf öffnen.
     </p>
   </header>
 
@@ -317,12 +317,13 @@
 
           <div class="btns">
             <button type="button" class="danger" id="resetBtn">Zurücksetzen</button>
+            <button type="button" id="emailBtn">E-Mail Entwurf</button>
             <button type="submit" class="primary" id="confirmBtn">Bestätigen</button>
           </div>
 
           <div class="hint">
-            Hinweis: Der Versand erfolgt nicht automatisch – der Browser öffnet nur einen E-Mail-Entwurf.
-            Je nach Gerät/Einstellungen öffnet sich Gmail, die Standard-Mail-App oder Gmail-Web.
+            Nutzung: Erst Eintrag(e) mit „Bestätigen“ speichern. Danach:
+            „Bearbeiten“ beim passenden Eintrag klicken und „E-Mail Entwurf“ drücken.
           </div>
         </form>
       </div>
@@ -368,6 +369,7 @@
       const countEl = $("count");
       const modeBadge = $("modeBadge");
       const resetBtn = $("resetBtn");
+      const emailBtn = $("emailBtn");
 
       const MAIL_TO = "davsan86@gmail.com";
       const SIGNATURE = "Mit freundlichen Grüßen,\nAnja Sanchez";
@@ -388,7 +390,6 @@
       }
 
       function formatDE(iso){
-        // iso: YYYY-MM-DD
         if(!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return iso || "";
         const [y,m,d] = iso.split("-");
         return `${d}.${m}.${y}`;
@@ -418,43 +419,10 @@ ${SIGNATURE}`;
           .replace(/[!'()*]/g, c => '%' + c.charCodeAt(0).toString(16).toUpperCase());
       }
 
-      function openEmailCompose(to, subject, body){
-        // 1) Versuch: Gmail App Scheme (iOS/Android, wenn unterstützt)
-        const gmailScheme = `googlegmail:///co?to=${encodeRFC3986(to)}&subject=${encodeRFC3986(subject)}&body=${encodeRFC3986(body)}`;
-
-        // 2) Fallback: mailto (öffnet App-Auswahl / Standard-Mail-App)
+      // Maximal kompatibel: mailto. Wenn Gmail als Standard-Mail-App gesetzt ist, öffnet es i.d.R. Gmail.
+      function openEmailDraft(to, subject, body){
         const mailto = `mailto:${encodeRFC3986(to)}?subject=${encodeRFC3986(subject)}&body=${encodeRFC3986(body)}`;
-
-        // 3) Letzter Fallback: Gmail Web (wenn kein Mail-Client greift)
-        const gmailWeb = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeRFC3986(to)}&su=${encodeRFC3986(subject)}&body=${encodeRFC3986(body)}`;
-
-        // Einige Browser blockieren/ignorieren Schemes; wir versuchen gestaffelt.
-        // Wenn gmailScheme nicht greift, wird nach kurzer Zeit mailto versucht.
-        // Wenn mailto nicht greift (z.B. kein Mail-Client konfiguriert), bleibt Gmail-Web.
-        let fallback2Timer = null;
-        let fallback3Timer = null;
-
-        try {
-          window.location.href = gmailScheme;
-
-          fallback2Timer = setTimeout(() => {
-            window.location.href = mailto;
-          }, 450);
-
-          fallback3Timer = setTimeout(() => {
-            window.open(gmailWeb, "_blank", "noopener");
-          }, 1200);
-
-          // Wenn der User zurückkommt oder der Tab wechselt, Timers reduzieren
-          window.addEventListener("pagehide", () => {
-            clearTimeout(fallback2Timer);
-            clearTimeout(fallback3Timer);
-          }, { once:true });
-
-        } catch(e) {
-          window.location.href = mailto;
-          setTimeout(() => window.open(gmailWeb, "_blank", "noopener"), 500);
-        }
+        window.location.href = mailto;
       }
 
       function saveEntries(){
@@ -522,7 +490,6 @@ ${SIGNATURE}`;
         vornameEl.value = e.vorname;
         datumEl.value = e.datum;
 
-        // Heute Checkbox nur als Komfort; wir setzen sie, wenn Datum heute ist
         const isToday = e.datum === todayISO();
         heuteEl.checked = isToday;
 
@@ -530,7 +497,6 @@ ${SIGNATURE}`;
         krankgemeldetEl.checked = e.statuses.includes("Krankgemeldet");
         wiederEl.checked = e.statuses.includes("Wieder zur Arbeit");
 
-        // Scroll auf Mobil zum Formular
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
 
@@ -611,6 +577,24 @@ ${SIGNATURE}`;
         }
       }
 
+      function getEntryForEmail(){
+        // 1) Wenn Bearbeiten-Modus aktiv → genau diesen Eintrag nehmen
+        if(editingId){
+          const e = entries.find(x => x.id === editingId);
+          if(e) return e;
+        }
+
+        // 2) Wenn Formular gültig ausgefüllt → aus Formular erzeugen (ohne zu speichern)
+        const formData = readForm();
+        const err = validate(formData);
+        if(!err) return formData;
+
+        // 3) Sonst: letzten Eintrag nehmen
+        if(entries.length) return entries[0];
+
+        return null;
+      }
+
       /** Events */
       heuteEl.addEventListener("change", () => {
         if(heuteEl.checked){
@@ -618,7 +602,6 @@ ${SIGNATURE}`;
         }
       });
       datumEl.addEventListener("input", () => {
-        // Wenn User Datum manuell ändert, "Heute" abwählen, falls nicht mehr heute
         heuteEl.checked = (datumEl.value === todayISO());
       });
 
@@ -626,6 +609,18 @@ ${SIGNATURE}`;
         clearForm();
       });
 
+      // NEU: E-Mail Entwurf Button
+      emailBtn.addEventListener("click", () => {
+        const entry = getEntryForEmail();
+        if(!entry){
+          alert("Kein Eintrag vorhanden. Bitte zuerst einen Eintrag speichern oder das Formular vollständig ausfüllen.");
+          return;
+        }
+        const { subject, body } = buildEmail(entry);
+        openEmailDraft(MAIL_TO, subject, body);
+      });
+
+      // Bestätigen = NUR speichern
       form.addEventListener("submit", (ev) => {
         ev.preventDefault();
         const data = readForm();
@@ -634,21 +629,11 @@ ${SIGNATURE}`;
           alert(err);
           return;
         }
-
-        // Speichern (neu/Update)
         upsertEntry(data);
-
-        // Email öffnen (für genau diesen Eintrag)
-        const entryForMail = { ...data };
-        const { subject, body } = buildEmail(entryForMail);
-        openEmailCompose(MAIL_TO, subject, body);
-
-        // Formular zurück in "Neu"
         clearForm();
       });
 
       /** Init */
-      // Default: Datum = heute (optional). Du kannst die nächste Zeile auskommentieren, wenn du kein Default willst.
       datumEl.value = todayISO();
       heuteEl.checked = true;
 
