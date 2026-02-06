@@ -409,7 +409,9 @@
       const clearCacheBtn = $("clearCacheBtn");
 
       const MAIL_TO = "davsan86@gmail.com";
-      const SIGNATURE = "Mit freundlichen Grüßen,\nAnja Sanchez";
+
+      const EMAIL_GREETING = "Sehr geehrte Damen und Herren,";
+      const EMAIL_CLOSING = "Mit freundlichen Grüßen,\nAnja Sanchez";
 
       let entries = loadEntries();
       let editingId = null;
@@ -541,23 +543,6 @@
         render();
       }
 
-      function getStatusTextForEntry(status, entry){
-        if(status === "Krankgemeldet"){
-          if(entry.krankBis && String(entry.krankBis).trim() !== ""){
-            return `Krankgemeldet bis ${formatDE(entry.krankBis)}`;
-          }
-          return "Krankgemeldet";
-        }
-        return status;
-      }
-
-      function getStatusClass(status){
-        if(status === "Krankgemeldet") return "bad";
-        if(status === "Wieder zur Arbeit") return "ok";
-        if(status === "Dienstabbruch") return "warn";
-        return "";
-      }
-
       function render(){
         listEl.innerHTML = "";
         countEl.textContent = String(entries.length);
@@ -592,9 +577,17 @@
           for(const s of baseStatuses){
             const pill = document.createElement("div");
             pill.className = "pill";
-            const cls = getStatusClass(s);
-            if(cls) pill.classList.add(cls);
-            pill.textContent = (s === "Keine Angabe") ? "Keine Angabe" : getStatusTextForEntry(s, e);
+            if(s === "Krankgemeldet") pill.classList.add("bad");
+            if(s === "Wieder zur Arbeit") pill.classList.add("ok");
+            if(s === "Dienstabbruch") pill.classList.add("warn");
+
+            // Anzeige in der Liste darf kompakt bleiben:
+            if(s === "Krankgemeldet" && e.krankBis){
+              pill.textContent = `Krankgemeldet bis ${formatDE(e.krankBis)}`;
+            } else {
+              pill.textContent = s;
+            }
+
             status.appendChild(pill);
           }
 
@@ -627,25 +620,51 @@
         }
       }
 
+      function statusSentenceForEntry(entry){
+        const parts = [];
+
+        if((entry.statuses || []).includes("Dienstabbruch")){
+          parts.push("den Dienst abgebrochen");
+        }
+
+        if((entry.statuses || []).includes("Krankgemeldet")){
+          if(entry.krankBis && String(entry.krankBis).trim() !== ""){
+            parts.push(`sich krankgemeldet (bis einschl. ${formatDE(entry.krankBis)})`);
+          } else {
+            parts.push("sich krankgemeldet");
+          }
+        }
+
+        if((entry.statuses || []).includes("Wieder zur Arbeit")){
+          parts.push("wieder zur Arbeit erschienen");
+        }
+
+        if(!parts.length){
+          return "keine Angabe gemacht";
+        }
+
+        // Lesbares Deutsch: "a, b und c"
+        if(parts.length === 1) return parts[0];
+        if(parts.length === 2) return `${parts[0]} und ${parts[1]}`;
+        return `${parts.slice(0, -1).join(", ")} und ${parts[parts.length - 1]}`;
+      }
+
       function buildEmailForAll(allEntries){
         const subject = "Krankmeldung";
         const lines = [];
 
         for(let i = 0; i < allEntries.length; i++){
           const e = allEntries[i];
-
-          const baseStatuses = (e.statuses && e.statuses.length) ? e.statuses : [];
-          const statusText = baseStatuses.length
-            ? baseStatuses.map(s => getStatusTextForEntry(s, e)).join(", ")
-            : "Keine Angabe";
-
-          lines.push(`${i+1}. ${e.name}, ${e.vorname} hat am ${formatDE(e.datum)}: ${statusText}`);
+          const actions = statusSentenceForEntry(e);
+          lines.push(`${i+1}. ${e.name}, ${e.vorname} hat/ist am ${formatDE(e.datum)}: ${actions}.`);
         }
 
         const body =
-`${lines.join("\n")}
+`${EMAIL_GREETING}
 
-${SIGNATURE}`;
+${lines.join("\n")}
+
+${EMAIL_CLOSING}`;
 
         return { subject, body };
       }
@@ -676,17 +695,13 @@ ${SIGNATURE}`;
       }
 
       /** Events */
-
-      // Standard (sollte überall reichen)
       heuteEl.addEventListener("change", applyHeute);
 
-      // Fallbacks (für den Fall, dass ein Browser "change" verspätet auslöst)
       const applyHeuteAfterToggle = () => requestAnimationFrame(applyHeute);
       heuteEl.addEventListener("click", applyHeuteAfterToggle);
       heuteEl.addEventListener("pointerup", applyHeuteAfterToggle);
       heuteEl.addEventListener("touchend", applyHeuteAfterToggle, { passive: true });
 
-      // Wenn Datum manuell geändert wird, "Heute" passend setzen
       datumEl.addEventListener("input", () => {
         heuteEl.checked = (datumEl.value === todayISO());
       });
